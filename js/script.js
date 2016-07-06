@@ -18,6 +18,7 @@
         //this is the background image
         this.load.image('background', './img/backgroundDigdug.png');
         this.load.image('winner', './img/youWin.png');
+        this.load.spritesheet('pump', "./img/pump.png", 284, 45);
         game.load.spritesheet("pookah", "img/144x144pookahSpriteSheet.png", 72, 72);
         game.load.spritesheet("fygar", "img/144x144fygarSpriteSheet.png", 102, 102);
         game.load.spritesheet("digger", "img/144x144spritesheet2.png", 72, 72); //little digger dude and how big he is ^_^
@@ -44,6 +45,7 @@
     var fygar2;
     var win;
 
+    var trackFacing = [0];
 
 
 
@@ -54,19 +56,6 @@
         //CREATE PLAYER
         //(xaxis, y-axis, which image we wish to select)
         this.background = this.game.add.sprite(0, 0, 'background')
-            //this is a random guy hanging out in the center of the world
-
-        //  this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'digger')
-
-        //STATIC MONSTERS ON THE X AND Y AXIS
-        // var pook = this.game.add.sprite(150, 250, 'pook')
-        // this.game.add.sprite(550, 370, 'pookah')
-        // this.game.add.sprite(100, 450, 'fygar')
-        // this.game.add.sprite(550, 150, 'fygar')
-          //var tinyPookah = this.digger.scale.setTo(0.5,0.5);
-          //tinyPookah.setTo(-0.5,0.5);
-
-
 
         pookah = game.add.group();
         fygar = game.add.group();
@@ -89,6 +78,7 @@
         downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        pumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
         pookah1 = pookah.create(150, 250, 'pookah');
         pookah2 = pookah.create(550, 370, 'pookah');
@@ -104,16 +94,17 @@
     //function called once every frame, ideally 60 times per second
     function update() {
         if (upKey.isDown) {
+            trackFacing = [0];
             digger.animations.play('walk', 5, false);
             if (digger.y > 50)
                 digger.y -= speed;
             if (digger.scale.x == -1)
                 digger.angle = 90;
-            // } if else
             else
                 digger.angle = -90;
 
         } else if (downKey.isDown) {
+            trackFacing = [1];
             digger.animations.play('walk', 5, false);
             if (digger.y < 550)
                 digger.y += speed;
@@ -123,6 +114,7 @@
                 digger.angle = 90;
 
         } else if (leftKey.isDown) {
+            trackFacing = [2];
             digger.animations.play('walk', 5, false);
             if (digger.x > 50)
                 digger.x -= speed;
@@ -130,23 +122,78 @@
             digger.angle = 0;
 
         } else if (rightKey.isDown) {
+            trackFacing = [3];
             digger.animations.play('walk', 5, false);
             if (digger.x < 750)
                 digger.x += speed;
             digger.scale.x = 1;
             digger.angle = 0;
         } else {
-          digger.animations.stop('stand', 3, true);
+            digger.animations.stop('stand', 3, true);
+        };
+
+        if (trackFacing[0] == 0) {
+          if (pumpButton.isDown) {
+            var pump = game.add.sprite(digger.x, digger.y, 'pump');
+            pump.enableBody = true;
+            game.physics.arcade.enable(pump);
+            pump.body.velocity.y = -1000;
+            pump.angle = -90;
+            game.physics.arcade.overlap(pump, pookah1, killPookah1);
+            game.physics.arcade.overlap(pump, pookah2, killPookah2);
+            game.physics.arcade.overlap(pump, pookah3, killPookah3);
+            game.physics.arcade.overlap(pump, fygar1, killFygar1);
+            game.physics.arcade.overlap(pump, fygar2, killFygar2);
+          }
         }
 
-        game.physics.arcade.overlap(digger,pookah1, killPookah1,null,this);
-        game.physics.arcade.overlap(digger,pookah2, killPookah2,null,this);
-        game.physics.arcade.overlap(digger,pookah3, killPookah3,null,this);
-        game.physics.arcade.overlap(digger,fygar1, killFygar1,null,this);
-        game.physics.arcade.overlap(digger,fygar2, killFygar2,null,this);
+        if (trackFacing[0] == 1) {
+          if (pumpButton.isDown) {
+            var pump = game.add.sprite(digger.x, digger.y, 'pump');
+            pump.enableBody = true;
+            game.physics.arcade.enable(pump);
+            pump.body.velocity.y = 1000;
+            pump.angle = 90;
+            game.physics.arcade.overlap(pump, pookah1, killPookah1);
+            game.physics.arcade.overlap(pump, pookah2, killPookah2);
+            game.physics.arcade.overlap(pump, pookah3, killPookah3);
+            game.physics.arcade.overlap(pump, fygar1, killFygar1);
+            game.physics.arcade.overlap(pump, fygar2, killFygar2);
+          }
+        }
+
+        if (trackFacing[0] == 2) {
+          if (pumpButton.isDown) {
+            var pump = game.add.sprite(digger.x, digger.y, 'pump');
+            pump.enableBody = true;
+            game.physics.arcade.enable(pump);
+            pump.body.velocity.x = -1000;
+            pump.angle = 180;
+            game.physics.arcade.overlap(pump, pookah1, killPookah1);
+            game.physics.arcade.overlap(pump, pookah2, killPookah2);
+            game.physics.arcade.overlap(pump, pookah3, killPookah3);
+            game.physics.arcade.overlap(pump, fygar1, killFygar1);
+            game.physics.arcade.overlap(pump, fygar2, killFygar2);
+          }
+        }
+
+        if (trackFacing[0] == 3) {
+          if (pumpButton.isDown) {
+            var pump = game.add.sprite(digger.x, digger.y, 'pump');
+            pump.enableBody = true;
+            game.physics.arcade.enable(pump);
+            pump.body.velocity.x = 1000;
+            game.physics.arcade.overlap(pump, pookah1, killPookah1);
+            game.physics.arcade.overlap(pump, pookah2, killPookah2);
+            game.physics.arcade.overlap(pump, pookah3, killPookah3);
+            game.physics.arcade.overlap(pump, fygar1, killFygar1);
+            game.physics.arcade.overlap(pump, fygar2, killFygar2);
+          }
+        }
+
     };
 
-function killPookah1(digger, pookah1){
+function killPookah1(){
   pookah1.kill();
   clear += 1;
   console.log(clear);
@@ -156,7 +203,7 @@ function killPookah1(digger, pookah1){
     speed = 9;}
 }
 
-function killPookah2(digger, pookah2){
+function killPookah2(){
   pookah2.kill();
   clear +=  1;
   console.log(clear);
@@ -166,7 +213,7 @@ function killPookah2(digger, pookah2){
     speed = 9;}
 }
 
-function killPookah3(digger, pookah3){
+function killPookah3(){
   pookah3.kill();
   clear += 1;
   console.log(clear);
@@ -176,7 +223,7 @@ function killPookah3(digger, pookah3){
     speed = 9;}
 }
 
-function killFygar1(digger, fygar1){
+function killFygar1(){
   fygar1.kill();
   clear += 1;
   console.log(clear);
@@ -186,7 +233,7 @@ function killFygar1(digger, fygar1){
     speed = 9; }
 }
 
-function killFygar2(digger, fygar2){
+function killFygar2(){
   fygar2.kill();
   clear += 1;
   console.log(clear);
