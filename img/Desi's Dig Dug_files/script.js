@@ -16,10 +16,6 @@
     var map;
     var layer;
 
-    function digSoil(){
-      map.putTile(-1, layer.getTileX(digger.x), layer.getTileY(digger.y));
-    }
-
     //FIRST FUNCTION CALLED
     function preload() {
         //this is the background image
@@ -72,7 +68,7 @@
             map.addTilesetImage('tiles');
             layer = map.createLayer(0);
             layer.resizeWorld();
-            map.setTileIndexCallback(2, this.digSoil, this);
+            map.setTileIndexCallback([0, 1, 2, 3], game.digSoil, game);
 
 
 
@@ -168,8 +164,7 @@
                 digger.x += speed;
             digger.scale.x = 1;
             digger.angle = 0;
-        }
-         else {
+        } else {
             digger.animations.stop('stand', 3, true);
         };
 
@@ -179,7 +174,6 @@
             pump.enableBody = true;
             game.physics.arcade.enable(pump);
             pump.body.velocity.y = -1000;
-            pump.body.velocity.x = 1000;
             pump.angle = -90;
             game.physics.arcade.overlap(pump, pookah1, killPookah1);
             game.physics.arcade.overlap(pump, pookah2, killPookah2);
@@ -287,8 +281,11 @@ function killFygar2(){
     speed = 9;}
 }
 
+function digSoil(){
+  map.putTile(-1, layer.getTileX(player.x), layer.getTileY(player.y));
+}
 
-// SOUND BITE
+//SOUND BITE
 // function PlaySound(noise) {
 //   var sound = document.getElementById(noise);
 //   sound.Play();

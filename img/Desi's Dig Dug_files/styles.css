@@ -1,0 +1,10 @@
+html body {
+  background-color: #000000;
+  /*border: 10px solid #000000;
+  border-radius: 5px;*/
+      }
+
+#area {
+  margin: 0, auto;
+  font-size: 70px;
+}

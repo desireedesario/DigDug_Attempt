@@ -1,6 +1,9 @@
 #This is a basic javascript arcade game
 
 #creating digDug from scratch
+
+####Link to Trello board: https://trello.com/b/sSWL5ba5/project-1
+
 ##Set MVP:
 	- we are making the arcade game Dig Dug
 	- 2 players
