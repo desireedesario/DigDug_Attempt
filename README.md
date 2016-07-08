@@ -2,6 +2,8 @@
 
 #Creating digDug From Scratch
 
+####Link to game: https://desireedesario.github.io/Project1_DigDug/
+
 ####Link to Trello board: https://trello.com/b/sSWL5ba5/project-1
 
 #####Dig Dug, dressed in white and blue and able to dig tunnels through destructible environments, is ridding the Earth of the destructive Pookahs and Fygars! Help defeat these mysterious enemies and save the world from destruction!

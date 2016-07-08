@@ -24,10 +24,10 @@ function preload() {
     //this is the background image
     // this.load.image('background', './img/backgroundDigdug.png');
     this.load.image('winner', './assets/img/youWin.png');
-    this.load.image('pump', "./assets/img/pump.png");
-    game.load.spritesheet("pookah", "assets/img/144x144pookahSpriteSheet.png", 72, 72);
-    game.load.spritesheet("fygar", "assets/img/144x144fygarSpriteSheet.png", 102, 102);
-    game.load.spritesheet("digger", "assets/img/144x144spritesheet2.png", 72, 72); //little digger dude and how big he is ^_^
+    this.load.image('pump', './assets/img/pump.png');
+    game.load.spritesheet('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
+    game.load.spritesheet('fygar', 'assets/img/144x144fygarSpriteSheet.png', 102, 102);
+    game.load.spritesheet('digger', 'assets/img/144x144spritesheet2.png', 72, 72); //little digger dude and how big he is ^_^
 
     //MAP
     game.load.tilemap('map13', 'assets/img/map1.csv');
@@ -195,7 +195,7 @@ function update() {
     if (trackFacing == 0) {
         if (pumpButton.isDown) {
             if (!pumpExists) {
-                	$("#pump").get(0).play(); //gets the first element of the sound
+                	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = game.add.sprite(digger.x, digger.y, 'pump');
                 pump.angle = -90;
                 pump.enableBody = true;
@@ -211,7 +211,7 @@ function update() {
     if (trackFacing == 1) {
         if (pumpButton.isDown) {
             if (!pumpExists) {
-                	$("#pump").get(0).play(); //gets the first element of the sound
+                	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = game.add.sprite(digger.x, digger.y, 'pump');
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
@@ -226,7 +226,7 @@ function update() {
     if (trackFacing == 2) {
         if (pumpButton.isDown) {
             if (!pumpExists) {
-                	$("#pump").get(0).play(); //gets the first element of the sound
+                	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = game.add.sprite(digger.x, digger.y, 'pump');
                 pump.angle = 90;
                 pump.enableBody = true;
@@ -242,7 +242,7 @@ function update() {
     if (trackFacing == 3) {
         if (pumpButton.isDown) {
             if (!pumpExists) {
-                	$("#pump").get(0).play(); //gets the first element of the sound
+                	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = game.add.sprite(digger.x, digger.y, 'pump');
                 pump.angle = 180;
                 pump.enableBody = true;
@@ -270,7 +270,7 @@ function update() {
         console.log(clear);
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
-            $("#win").get(0).play(); //gets the first element of the sound
+            $('#win').get(0).play(); //gets the first element of the sound
             speed = 9;
         }
     }
@@ -281,8 +281,8 @@ function update() {
         console.log(clear);
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
-            $("#win").get(0).play(); //gets the first element of the sound
-            // $("#winNoise").get(0).play();
+            $('#win').get(0).play(); //gets the first element of the sound
+            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -293,8 +293,8 @@ function update() {
         console.log(clear);
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
-            $("#win").get(0).play(); //gets the first element of the sound
-            // $("#winNoise").get(0).play();
+            $('#win').get(0).play(); //gets the first element of the sound
+            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -305,8 +305,8 @@ function update() {
         console.log(clear);
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
-            $("#win").get(0).play(); //gets the first element of the sound
-            // $("#winNoise").get(0).play();
+            $('#win').get(0).play(); //gets the first element of the sound
+            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -317,8 +317,8 @@ function update() {
         console.log(clear);
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
-            $("#win").get(0).play(); //gets the first element of the sound
-            // $("#winNoise").get(0).play();
+            $('#win').get(0).play(); //gets the first element of the sound
+            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
