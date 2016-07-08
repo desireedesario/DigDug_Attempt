@@ -1,7 +1,9 @@
 html body {
   background-color: #000000;
-  /*border: 10px solid #000000;
-  border-radius: 5px;*/
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
       }
 
 #area {

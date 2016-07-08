@@ -21,8 +21,8 @@ function digSoil() {
 
 //FIRST FUNCTION CALLED
 function preload() {
-    //this is the background image
-    // this.load.image('background', './img/backgroundDigdug.png');
+
+    //SPRITESHEET(KEY, URL, FRAMEWIDTH, FRAMEHEIGHT, FRAMEMAX, MARGIN, SPACING) → {PHASER.LOADER}
     this.load.image('winner', './assets/img/youWin.png');
     this.load.image('pump', './assets/img/pump.png');
     game.load.spritesheet('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
@@ -65,7 +65,7 @@ var pumpExists = false;
 
 //second function called after the preload of the game
 function create() {
-    //SPRITESHEET(KEY, URL, FRAMEWIDTH, FRAMEHEIGHT, FRAMEMAX, MARGIN, SPACING) → {PHASER.LOADER}
+    //LOAD IN ARCADE PHYSICS
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //remove tiles on map
@@ -103,6 +103,7 @@ function create() {
     rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
     pumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+    //ENEMIES
     pookah1 = pookah.create(150, 750, 'pookah');
     pookah1.anchor.setTo(0.5, 0.5);
     pookah1.animations.add('walk', [0, 1], 2, true)
@@ -141,18 +142,13 @@ function create() {
 
 }
 
-
-
-//DIGGER DUDE CONTROLLED MOVEMENT
-
 //function called once every frame, ideally 60 times per second
 function update() {
-
-
 
     //removing layers on map function
     map.setTileIndexCallback(0, this.digSoil, this);
 
+    //DIGGER DUDE CONTROLLED MOVEMENT
     if (upKey.isDown) {
         trackFacing = 0;
         digger.animations.play('walk', 5, false);
@@ -294,7 +290,6 @@ function update() {
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
             $('#win').get(0).play(); //gets the first element of the sound
-            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -306,7 +301,6 @@ function update() {
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
             $('#win').get(0).play(); //gets the first element of the sound
-            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -318,7 +312,6 @@ function update() {
         if (clear == 5) {
             win = winner.create(100, 100, 'winner');
             $('#win').get(0).play(); //gets the first element of the sound
-            // $('#winNoise').get(0).play();
             speed = 9;
         }
     }
@@ -331,11 +324,10 @@ function update() {
         pumpExists = false;
     }
 
+    //this function will pass the sound to your event when it is clicked
+    //(must have jquery library script linked)
     function PlaySound(soundObj) {
     sound = document.getElementById(soundObj);
     sound.Play();
     }
 }
-
-//THIS FUNCTION WILL PASS THE SOUND TO YOUR EVENT WHEN IT IS CLICKED
-//(MUST HAVE JQUERY LIBRARY SCRIPT LINKED)
