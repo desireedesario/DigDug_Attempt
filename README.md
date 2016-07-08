@@ -22,17 +22,17 @@
 ###WireFrames
 
 - Hitting the Monster
-![Hitting The Monster](assets/img/hitMonster.jpeg)
+![Hitting The Monster](assets/img/wireframe/hitMonster.jpeg)
 - How I will organize my functions
-![How I will organize my functions](assets/img/howToOrganizeFunctions.jpeg)
+![How I will organize my functions](assets/img/wireframe/howToOrganizeFunctions.jpeg)
 - How the mainscreen will look
-![How the mainscreen will look](assets/img/MainScreenNotes.jpeg)
+![How the mainscreen will look](assets/img/wireframe/MainScreenNotes.jpeg)
 - Monster Movement
-![Monster Movement](assets/img/monsterMovement.jpeg)
+![Monster Movement](assets/img/wireframe/monsterMovement.jpeg)
 - (Maybe) add timer counting up
-![Maybe add timer counting up](assets/img/timeCounter.jpeg)
+![Maybe add timer counting up](assets/img/wireframe/timeCounter.jpeg)
 - Setting a Win Logic
-![Setting a Win Logic](assets/img/winLogic.jpeg)
+![Setting a Win Logic](assets/img/wireframe/winLogic.jpeg)
 
 ###Technologies Used
 - HTML/CSS/JavaScript
