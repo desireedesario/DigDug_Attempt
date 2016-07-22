@@ -1,20 +1,34 @@
-//Creates a new game object wth a single state that has three functions
-//Phaser.game is apart if the phaser library, documentation found @:http://phaser.io/docs/2.5.0/Phaser.Game.html
-//first 2 parameters are width and height of the game, the third is a function letting the game run on the internet, and fourth is an empty string to add a background, and the fincal is a parameter are the four essential funtions
+/**
+ * Creates a new game object with a single state that has three functions.
+ *
+ * Phaser.Game is part of the Phaser library. First 2 parameters are width and height of the game, 
+ * the third is a function letting the game run on the internet, and fourth is an empty string to 
+ * add a background, and the fincal is a parameter are the four essential funtions.
+ * 
+ * @type {Phaser}
+ * @see http://phaser.io/docs/2.5.0/Phaser.Game.html
+ */
 var game = new Phaser.Game(
-    800, 1000, //size of game
-    Phaser.AUTO, //renders phasers commands
-    'gameArea', // The HTML element ID we will connect Phaser to.
-    { // Functions (callbacks) for Phaser to call in
-        preload: preload,
-        create: create,
-        update: update
-    });
-
+                800, 1000,      // Size of game
+                Phaser.AUTO,    // Renders phasers commands
+                'gameArea',     // The HTML element ID we will connect Phaser to.
+                
+                // Functions (callbacks) for Phaser to call in
+                {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+           );
 var map;
 var layer;
 
-//remove tiles
+var pookahs;
+var fygars;
+
+/**
+ * Remove tiles from the game
+ */
 function digSoil() {
     map.putTile(-1, layer.getTileX(digger.x), layer.getTileY(digger.y));
 }
@@ -25,8 +39,12 @@ function preload() {
     //SPRITESHEET(KEY, URL, FRAMEWIDTH, FRAMEHEIGHT, FRAMEMAX, MARGIN, SPACING) → {PHASER.LOADER}
     this.load.image('winner', './assets/img/youWin.png');
     this.load.image('pump', './assets/img/pump.png');
-    game.load.spritesheet('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
-    game.load.spritesheet('fygar', 'assets/img/144x144fygarSpriteSheet.png', 102, 102);
+
+    // LOAD ENEMIES
+    // --=  https://www.youtube.com/watch?v=9IclmVdWNbI  =--
+    pookahs = new Character('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
+    fygars = new Character('fygar', 'assets/img/144x144fygarSpriteSheet.png', 102, 102);
+    
     game.load.spritesheet('digger', 'assets/img/144x144spritesheet2.png', 72, 72); //little digger dude and how big he is ^_^
 
     //MAP
@@ -36,8 +54,6 @@ function preload() {
 
 //global variables creating object
 var digger;
-var pookah;
-var fygar;
 var upKey;
 var downKey;
 var leftKey;
@@ -48,20 +64,14 @@ var clear = 0;
 //speed of main character
 var speed = 4;
 
-var pookah1;
-var pookah2;
-var pookah3;
-var fygar1;
-var fygar2;
 var win;
 var sound;
 
 var trackFacing = 1;
 
 var pump;
+var pumps;
 var pumpExists = false;
-
-
 
 //second function called after the preload of the game
 function create() {
@@ -77,11 +87,10 @@ function create() {
     map.setCollisionBetween(0, 1);
     map.setTileIndexCallback(0, this.digSoil, this);
 
-
-
-    pookah = game.add.group();
-    fygar = game.add.group();
     winner = game.add.group();
+    pumps = game.add.group();
+    pookahs.create();
+    fygars.create();
 
 
     //CONTROLED DIGGER
@@ -89,14 +98,9 @@ function create() {
     digger.animations.add('walk', [2, 3]);
     digger.animations.add('stand', [3]);
     digger.anchor.setTo(0.5, 0.5); //TUNRING RATIO
-    //digger.scale.setTo(0.5,0.5);
-
     digger.enableBody = true;
-    pookah.enableBody = true;
-    fygar.enableBody = true;
     game.physics.arcade.enable(digger);
-    game.physics.arcade.enable(pookah);
-    game.physics.arcade.enable(fygar);
+
     upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
     downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -104,42 +108,20 @@ function create() {
     pumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     //ENEMIES
-    pookah1 = pookah.create(150, 750, 'pookah');
-    pookah1.anchor.setTo(0.5, 0.5);
-    pookah1.animations.add('walk', [0, 1], 2, true)
-    pookah1.animations.play('walk', [0, 1], 2, true)
-    game.add.tween(pookah1).to({
-        y: pookah1.y + 100
-    }, 1500, 'Linear', true, 0, 100, true);
-    pookah2 = pookah.create(550, 270, 'pookah');
-    pookah2.anchor.setTo(0.5, 0.5);
-    pookah2.animations.add('walk', [0, 1], 2, true)
-    pookah2.animations.play('walk', [0, 1], 2, true)
-    game.add.tween(pookah2).to({
-        x: pookah2.x + 100
-    }, 1500, 'Linear', true, 0, 100, true);
-    pookah3 = pookah.create(500, 500, 'pookah');
-    pookah3.anchor.setTo(0.5, 0.5);
-    pookah3.animations.add('walk', [0, 1], 2, true)
-    pookah3.animations.play('walk', [0, 1], 2, true)
-    game.add.tween(pookah3).to({
-        y: pookah3.y + 100
-    }, 1500, 'Linear', true, 0, 100, true);
-    fygar1 = fygar.create(100, 450, 'fygar');
-    fygar1.anchor.setTo(0.5, 0.5);
-    fygar1.animations.add('walk', [0, 1], 2, true)
-    fygar1.animations.play('walk', [0, 1], 2, true)
-    game.add.tween(fygar1).to({
-        x: fygar1.x + 100
-    }, 1500, 'Linear', true, 0, 100, true);
-    fygar2 = fygar.create(550, 750, 'fygar');
-    fygar1.anchor.setTo(0.5, 0.5);
-    fygar1.animations.add('walk', [0, 1], 2, true)
-    fygar1.animations.play('walk', [0, 1], 2, true)
-    game.add.tween(fygar2).to({
-        x: fygar2.x + 100
-    }, 1500, 'Linear', true, 0, 100, true);
+    var p = pookahs.add(150, 200);
+    game.add.tween(p).to({y: p.y + 100}, 1500, 'Linear', true, 0, 100, true);
 
+    p = pookahs.add(550, 270);
+    game.add.tween(p).to({x: p.x + 100}, 1500, 'Linear', true, 0, 100, true);
+
+    p = pookahs.add(500, 500);
+    game.add.tween(p).to({y: p.y + 100}, 1500, 'Linear', true, 0, 100, true);
+
+    var f = fygars.add(100, 450);
+    game.add.tween(f).to({x: f.x + 100}, 1500, 'Linear', true, 0, 100, true);
+
+    f = fygars.add(550, 750);
+    game.add.tween(f).to({x: f.x + 100}, 1500, 'Linear', true, 0, 100, true);
 }
 
 //function called once every frame, ideally 60 times per second
@@ -192,7 +174,7 @@ function update() {
         if (pumpButton.isDown) {
             if (!pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
-                pump = game.add.sprite(digger.x, digger.y, 'pump');
+                pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = -90;
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
@@ -208,7 +190,7 @@ function update() {
         if (pumpButton.isDown) {
             if (!pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
-                pump = game.add.sprite(digger.x, digger.y, 'pump');
+                pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
                 pump.physicsBodyType = Phaser.Physics.ARCADE;
@@ -223,7 +205,7 @@ function update() {
         if (pumpButton.isDown) {
             if (!pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
-                pump = game.add.sprite(digger.x, digger.y, 'pump');
+                pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = 90;
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
@@ -239,7 +221,7 @@ function update() {
         if (pumpButton.isDown) {
             if (!pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
-                pump = game.add.sprite(digger.x, digger.y, 'pump');
+                pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = 180;
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
@@ -251,69 +233,14 @@ function update() {
         }
     }
 
+    pookahs.checkCollisions(pumps);
+    fygars.checkCollisions(pumps);
 
-    game.physics.arcade.overlap(pump, pookah1, killPookah1);
-    game.physics.arcade.overlap(pump, pookah2, killPookah2);
-    game.physics.arcade.overlap(pump, pookah3, killPookah3);
-    game.physics.arcade.overlap(pump, fygar1, killFygar1);
-    game.physics.arcade.overlap(pump, fygar2, killFygar2);
-
-
-
-    function killPookah1() {
-        pookah1.kill();
-        clear += 1;
-        console.log(clear);
-        if (clear == 5) {
-            win = winner.create(100, 100, 'winner');
-            $('#win').get(0).play(); //gets the first element of the sound
-            speed = 9;
-        }
-    }
-
-    function killPookah2() {
-        pookah2.kill();
-        clear += 1;
-        console.log(clear);
-        if (clear == 5) {
-            win = winner.create(100, 100, 'winner');
-            $('#win').get(0).play(); //gets the first element of the sound
-            // $('#winNoise').get(0).play();
-            speed = 9;
-        }
-    }
-
-    function killPookah3() {
-        pookah3.kill();
-        clear += 1;
-        console.log(clear);
-        if (clear == 5) {
-            win = winner.create(100, 100, 'winner');
-            $('#win').get(0).play(); //gets the first element of the sound
-            speed = 9;
-        }
-    }
-
-    function killFygar1() {
-        fygar1.kill();
-        clear += 1;
-        console.log(clear);
-        if (clear == 5) {
-            win = winner.create(100, 100, 'winner');
-            $('#win').get(0).play(); //gets the first element of the sound
-            speed = 9;
-        }
-    }
-
-    function killFygar2() {
-        fygar2.kill();
-        clear += 1;
-        console.log(clear);
-        if (clear == 5) {
-            win = winner.create(100, 100, 'winner');
-            $('#win').get(0).play(); //gets the first element of the sound
-            speed = 9;
-        }
+    if (isGameOver()) {    
+        win = winner.create(100, 100, 'winner');
+        $('#win').get(0).play(); //gets the first element of the sound
+        speed = 9;
+        game.paused = true;
     }
 
     function digSoil() {
@@ -330,4 +257,91 @@ function update() {
     sound = document.getElementById(soundObj);
     sound.Play();
     }
+}
+
+function isGameOver() {
+    return pookahs.instances.length == 0 && fygars.instances.length == 0;
+}
+
+/**
+ * Represents a character in the game.
+ *
+ * @constructor
+ * 
+ * @param {String} name         A unique name for the character type
+ * @param {String} spritesheet  Path to the spritesheet file for this character type
+ * @param {Number} width        Width of a single frame of the spritesheet
+ * @param {Number} height       Height of a single frame of the spritesheet
+ */
+function Character(name, spritesheet, width, height) {
+
+    // Set properties
+    this.name = name;
+    this.spritesheet = spritesheet;
+    this.width = width;
+    this.height = height;
+
+    // Load spritesheet
+    game.load.spritesheet(this.name, this.spritesheet, this.width, this.height);
+
+    this.instances = [];
+    this.animations = {};
+
+    // Default anchor values
+    this.anchorX = 0.5;
+    this.anchorY = 0.5;
+}
+
+Character.prototype = {
+    constructor: Character,
+
+    create: function() {
+        this.group = game.add.group();
+        this.group.enableBody = true;
+        this.group.physicsBodyType = Phaser.Physics.ARCADE;
+    },
+
+    /** 
+     * Function for creating a new character in this group.
+     * CALL THIS FUNCTION IN PHASER CREATE STAGE!       
+     */
+    add: function(x, y) {
+        var newCharacter = this.group.create(x, y, this.name);
+        newCharacter.anchor.setTo(this.anchorX, this.anchorY);
+
+        // Loop through and add each animation
+        Object.keys(this.animations).forEach(function(k) {
+            newCharacter.animations.add(
+                this.animations[k].name,
+                this.animations[k].frames,
+                this.animations[k].frameRate,
+                this.animations[k].loop
+            );
+        });
+
+        this.instances.push(newCharacter);
+
+        return newCharacter;
+    },
+
+    addAnimation: function(name, frames, frameRate, loop) {
+        this.animations[name] = {name: name, frames: frames, frameRate: frameRate, loop: loop};
+    },
+
+    playAnimation: function(name) {
+        this.group.callAll('animations.play', null, name);
+    },
+
+    checkCollisions: function(colliderGroup) {
+        for (var i=0, len = this.instances.length; i < len; i++) {
+            game.physics.arcade.overlap(colliderGroup, this.instances[i], this.kill, null, this);
+        }
+    },
+
+    kill: function(sprite, group) {
+        sprite.kill();
+        this.instances.splice(this.instances.indexOf(sprite), 1);
+    }
+
+    //setMovement: function(direction, )
 }
