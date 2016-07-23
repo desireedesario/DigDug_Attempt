@@ -18,19 +18,50 @@ var game = new Phaser.Game(
                     preload: preload,
                     create: create,
                     update: update
-                }
-           );
-var map;
-var layer;
+                });
 
-var pookahs;
-var fygars;
+var world = {
+    map: null,
+    layer: null,
+
+    speed: 4,       // Speed of main character
+
+    pumpExists: false,
+
+    objects: {}     // Sprite groups
+};
+
+var controls = {
+    upKey: game.input.keyboard.addKey(Phaser.Keyboard.UP),
+    downKey: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
+    leftKey: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+    rightKey: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
+    pumpButton: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
+};
+
+//global variables creating object
+var digger;
+
+
+
+
+
+var win;
+var sound;
+
+var trackFacing = 1;
+
+var pump;
+var pumps;
+face
+
+
 
 /**
  * Remove tiles from the game
  */
 function digSoil() {
-    map.putTile(-1, layer.getTileX(digger.x), layer.getTileY(digger.y));
+    world.map.putTile(-1, world.layer.getTileX(digger.x), world.layer.getTileY(digger.y));
 }
 
 //FIRST FUNCTION CALLED
@@ -42,55 +73,34 @@ function preload() {
 
     // LOAD ENEMIES
     // --=  https://www.youtube.com/watch?v=9IclmVdWNbI  =--
-    pookahs = new Character('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
-    fygars = new Character('fygar', 'assets/img/144x144fygarSpriteSheet.png', 102, 102);
+    world.objects.pookahs = new Character('pookah', 'assets/img/144x144pookahspriteSheet.png', 72, 72);
+    world.objects.fygars = new Character('fygar', 'assets/img/144x144fygarspriteSheet.png', 102, 102);
     
     game.load.spritesheet('digger', 'assets/img/144x144spritesheet2.png', 72, 72); //little digger dude and how big he is ^_^
 
-    //MAP
+    // Map
     game.load.tilemap('map13', 'assets/img/map1.csv');
     game.load.image('tiles', 'assets/img/32x32soil.png');
 }
-
-//global variables creating object
-var digger;
-var upKey;
-var downKey;
-var leftKey;
-var rightKey;
-
-var clear = 0;
-
-//speed of main character
-var speed = 4;
-
-var win;
-var sound;
-
-var trackFacing = 1;
-
-var pump;
-var pumps;
-var pumpExists = false;
 
 //second function called after the preload of the game
 function create() {
     //LOAD IN ARCADE PHYSICS
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    //remove tiles on map
-    map = game.add.tilemap('map13', 32, 32);
-    map.addTilesetImage('tiles');
-    layer = map.createLayer(0);
-    layer.resizeWorld();
+    //remove tiles on world.map
+    world.map = game.add.tilemap('map13', 32, 32);
+    world.map.addTilesetImage('tiles');
+    world.layer = world.map.createworld.layer(0);
+    world.layer.resizeWorld();
 
-    map.setCollisionBetween(0, 1);
-    map.setTileIndexCallback(0, this.digSoil, this);
+    world.map.setCollisionBetween(0, 1);
+    world.map.setTileIndexCallback(0, this.digSoil, this);
 
     winner = game.add.group();
     pumps = game.add.group();
-    pookahs.create();
-    fygars.create();
+    world.objects.pookahs.create();
+    world.objects.fygars.create();
 
 
     //CONTROLED DIGGER
@@ -101,54 +111,50 @@ function create() {
     digger.enableBody = true;
     game.physics.arcade.enable(digger);
 
-    upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    pumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
 
     //ENEMIES
-    var p = pookahs.add(150, 200);
+    var p = world.objects.pookahs.add(150, 200);
     game.add.tween(p).to({y: p.y + 100}, 1500, 'Linear', true, 0, 100, true);
 
-    p = pookahs.add(550, 270);
+    p = world.objects.pookahs.add(550, 270);
     game.add.tween(p).to({x: p.x + 100}, 1500, 'Linear', true, 0, 100, true);
 
-    p = pookahs.add(500, 500);
+    p = world.objects.pookahs.add(500, 500);
     game.add.tween(p).to({y: p.y + 100}, 1500, 'Linear', true, 0, 100, true);
 
-    var f = fygars.add(100, 450);
+    var f = world.objects.fygars.add(100, 450);
     game.add.tween(f).to({x: f.x + 100}, 1500, 'Linear', true, 0, 100, true);
 
-    f = fygars.add(550, 750);
+    f = world.objects.fygars.add(550, 750);
     game.add.tween(f).to({x: f.x + 100}, 1500, 'Linear', true, 0, 100, true);
 }
 
 //function called once every frame, ideally 60 times per second
 function update() {
 
-    //removing layers on map function
-    map.setTileIndexCallback(0, this.digSoil, this);
+    //removing world.layers on world.map function
+    world.map.setTileIndexCallback(0, this.digSoil, this);
 
     //DIGGER DUDE CONTROLLED MOVEMENT
-    if (upKey.isDown) {
+    if (controls.upKey.isDown) {
         trackFacing = 0;
         digger.animations.play('walk', 5, false);
         digSoil();
         digger.y -= speed;
-        if (trackFacing == 0) {
-            digger.angle = -90
+        if (trackFacing === 0) {
+            digger.angle = -90;
         }
 
-    } else if (downKey.isDown) {
+    } else if (controls.downKey.isDown) {
         trackFacing = 2;
         digger.animations.play('walk', 5, false);
         digSoil();
         digger.y += speed;
         if (trackFacing == 2) {
-            digger.angle = 90
+            digger.angle = 90;
         }
-    } else if (leftKey.isDown) {
+    } else if (controls.leftKey.isDown) {
         trackFacing = 3;
         digger.animations.play('walk', 5, false);
         digSoil();
@@ -157,7 +163,7 @@ function update() {
             digger.scale.y = -1;
             digger.angle = 180;
         }
-    } else if (rightKey.isDown) {
+    } else if (controls.rightKey.isDown) {
         trackFacing = 1;
         digger.animations.play('walk', 5, false);
         digSoil();
@@ -168,11 +174,11 @@ function update() {
         }
     } else {
         digger.animations.stop('stand', 3, true);
-    };
+    }
 
-    if (trackFacing == 0) {
-        if (pumpButton.isDown) {
-            if (!pumpExists) {
+    if (trackFacing === 0) {
+        if (controls.pumpButton.isDown) {
+            if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = -90;
@@ -180,30 +186,30 @@ function update() {
                 game.physics.arcade.enable(pump);
                 pump.physicsBodyType = Phaser.Physics.ARCADE;
                 pump.body.velocity.y = -1000;
-                pumpExists = true;
+                world.pumpExists = true;
                 game.time.events.add(Phaser.Timer.SECOND * 1, reload);
             }
         }
-    };
+    }
 
     if (trackFacing == 1) {
-        if (pumpButton.isDown) {
-            if (!pumpExists) {
+        if (controls.pumpButton.isDown) {
+            if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.enableBody = true;
                 game.physics.arcade.enable(pump);
                 pump.physicsBodyType = Phaser.Physics.ARCADE;
                 pump.body.velocity.x = 1000;
-                pumpExists = true;
+                world.pumpExists = true;
                 game.time.events.add(Phaser.Timer.SECOND * 1, reload);
             }
         }
     }
 
     if (trackFacing == 2) {
-        if (pumpButton.isDown) {
-            if (!pumpExists) {
+        if (controls.pumpButton.isDown) {
+            if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = 90;
@@ -211,15 +217,15 @@ function update() {
                 game.physics.arcade.enable(pump);
                 pump.physicsBodyType = Phaser.Physics.ARCADE;
                 pump.body.velocity.y = 1000;
-                pumpExists = true;
+                world.pumpExists = true;
                 game.time.events.add(Phaser.Timer.SECOND * 1, reload);
             }
         }
     }
 
     if (trackFacing == 3) {
-        if (pumpButton.isDown) {
-            if (!pumpExists) {
+        if (controls.pumpButton.isDown) {
+            if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
                 pump.angle = 180;
@@ -227,14 +233,14 @@ function update() {
                 game.physics.arcade.enable(pump);
                 pump.physicsBodyType = Phaser.Physics.ARCADE;
                 pump.body.velocity.x = -1000;
-                pumpExists = true;
+                world.pumpExists = true;
                 game.time.events.add(Phaser.Timer.SECOND * 1, reload);
             }
         }
     }
 
-    pookahs.checkCollisions(pumps);
-    fygars.checkCollisions(pumps);
+    world.objects.pookahs.checkCollisions(pumps);
+    world.objects.fygars.checkCollisions(pumps);
 
     if (isGameOver()) {    
         win = winner.create(100, 100, 'winner');
@@ -244,11 +250,11 @@ function update() {
     }
 
     function digSoil() {
-        map.putTile(-1, layer.getTileX(digger.x), layer.getTileY(digger.y));
+        world.map.putTile(-1, world.layer.getTileX(digger.x), world.layer.getTileY(digger.y));
     }
 
     function reload() {
-        pumpExists = false;
+        world.pumpExists = false;
     }
 
     //this function will pass the sound to your event when it is clicked
@@ -260,7 +266,7 @@ function update() {
 }
 
 function isGameOver() {
-    return pookahs.instances.length == 0 && fygars.instances.length == 0;
+    return world.objects.pookahs.instances.length === 0 && world.objects.fygars.instances.length === 0;
 }
 
 /**
@@ -344,4 +350,4 @@ Character.prototype = {
     }
 
     //setMovement: function(direction, )
-}
+};
