@@ -1,11 +1,17 @@
+/* script.js - it really whips the pookah's ass! */
+
+/////////////////////
+// === GLOBALS === //
+/////////////////////
+
 /**
  * Creates a new game object with a single state that has three functions.
  *
  * Phaser.Game is part of the Phaser library. First 2 parameters are width and height of the game, 
  * the third is a function letting the game run on the internet, and fourth is an empty string to 
- * add a background, and the fincal is a parameter are the four essential funtions.
+ * add a background, and the final is a parameter are the four essential funtions.
  * 
- * @type {Phaser}
+ * @type {Phaser.Game}
  * @see http://phaser.io/docs/2.5.0/Phaser.Game.html
  */
 var game = new Phaser.Game(
@@ -17,45 +23,42 @@ var game = new Phaser.Game(
                 {
                     preload: preload,
                     create: create,
-                    update: update
+                    update: update,
+                    render: render
                 });
 
+/**
+ * Holds global variables/settings that concern the game world.
+ * @type {Object}
+ */
 var world = {
     map: null,
     layer: null,
 
-    speed: 4,       // Speed of main character
+    speed: 4,           // Speed of main character
 
     pumpExists: false,
 
-    objects: {}     // Sprite groups
+    objects: {}         // Sprite groups
 };
 
-var controls = {
-    upKey: game.input.keyboard.addKey(Phaser.Keyboard.UP),
-    downKey: game.input.keyboard.addKey(Phaser.Keyboard.DOWN),
-    leftKey: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
-    rightKey: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT),
-    pumpButton: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR)
-};
+/**
+ * Defines buttons to control the game.
+ * @type {Object}
+ */
+var controls = {};
 
 //global variables creating object
 var digger;
-
-
-
-
-
 var win;
 var sound;
-
 var trackFacing = 1;
-
 var pump;
 var pumps;
-face
 
-
+///////////////////////
+// === FUNCTIONS === //
+///////////////////////
 
 /**
  * Remove tiles from the game
@@ -67,18 +70,34 @@ function digSoil() {
 //FIRST FUNCTION CALLED
 function preload() {
 
-    //SPRITESHEET(KEY, URL, FRAMEWIDTH, FRAMEHEIGHT, FRAMEMAX, MARGIN, SPACING) → {PHASER.LOADER}
+    // FPS DEBUGING
+    game.time.advancedTiming = true;
+
+    // Controls
+    controls.upKey = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    controls.downKey = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    controls.leftKey = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    controls.rightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    controls.pumpKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+    // Graphics for non-object sprites
     this.load.image('winner', './assets/img/youWin.png');
     this.load.image('pump', './assets/img/pump.png');
 
-    // LOAD ENEMIES
-    // --=  https://www.youtube.com/watch?v=9IclmVdWNbI  =--
-    world.objects.pookahs = new Character('pookah', 'assets/img/144x144pookahspriteSheet.png', 72, 72);
-    world.objects.fygars = new Character('fygar', 'assets/img/144x144fygarspriteSheet.png', 102, 102);
-    
-    game.load.spritesheet('digger', 'assets/img/144x144spritesheet2.png', 72, 72); //little digger dude and how big he is ^_^
+    // Little digger dude
+    world.objects.digger = new Character('digger', 'assets/img/144x144spritesheet2.png', 72, 72);
+    world.objects.digger.addAnimation('walk', [2, 3]);
+    world.objects.digger.addAnimation('stand', [3]);
 
-    // Map
+    // Graphics for enemies
+    // --=  https://www.youtube.com/watch?v=9IclmVdWNbI  =--
+    world.objects.pookahs = new Character('pookah', 'assets/img/144x144pookahSpriteSheet.png', 72, 72);
+    world.objects.pookahs.addAnimation('walk', [0, 1], 3, true);
+
+    world.objects.fygars = new Character('fygar', 'assets/img/144x144fygarSpriteSheet.png', 102, 102);
+    world.objects.fygars.addAnimation('walk', [0, 1], 3, true);    
+    
+    // Game World Map
     game.load.tilemap('map13', 'assets/img/map1.csv');
     game.load.image('tiles', 'assets/img/32x32soil.png');
 }
@@ -91,7 +110,7 @@ function create() {
     //remove tiles on world.map
     world.map = game.add.tilemap('map13', 32, 32);
     world.map.addTilesetImage('tiles');
-    world.layer = world.map.createworld.layer(0);
+    world.layer = world.map.createLayer(0);
     world.layer.resizeWorld();
 
     world.map.setCollisionBetween(0, 1);
@@ -102,16 +121,9 @@ function create() {
     world.objects.pookahs.create();
     world.objects.fygars.create();
 
-
-    //CONTROLED DIGGER
-    digger = game.add.sprite(100, 100, 'digger');
-    digger.animations.add('walk', [2, 3]);
-    digger.animations.add('stand', [3]);
-    digger.anchor.setTo(0.5, 0.5); //TUNRING RATIO
-    digger.enableBody = true;
-    game.physics.arcade.enable(digger);
-
-
+    // Create the digger 
+    world.objects.digger.create();
+    world.objects.digger.add(100, 100);
 
     //ENEMIES
     var p = world.objects.pookahs.add(150, 200);
@@ -128,10 +140,16 @@ function create() {
 
     f = world.objects.fygars.add(550, 750);
     game.add.tween(f).to({x: f.x + 100}, 1500, 'Linear', true, 0, 100, true);
+
+    world.objects.pookahs.playAnimation('walk');
+    world.objects.fygars.playAnimation('walk');
 }
 
 //function called once every frame, ideally 60 times per second
 function update() {
+
+    var digger = world.objects.digger.sprite(0);
+    var speed = world.speed;
 
     //removing world.layers on world.map function
     world.map.setTileIndexCallback(0, this.digSoil, this);
@@ -177,7 +195,7 @@ function update() {
     }
 
     if (trackFacing === 0) {
-        if (controls.pumpButton.isDown) {
+        if (controls.pumpKey.isDown) {
             if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
@@ -193,7 +211,7 @@ function update() {
     }
 
     if (trackFacing == 1) {
-        if (controls.pumpButton.isDown) {
+        if (controls.pumpKey.isDown) {
             if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
@@ -208,7 +226,7 @@ function update() {
     }
 
     if (trackFacing == 2) {
-        if (controls.pumpButton.isDown) {
+        if (controls.pumpKey.isDown) {
             if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
@@ -224,7 +242,7 @@ function update() {
     }
 
     if (trackFacing == 3) {
-        if (controls.pumpButton.isDown) {
+        if (controls.pumpKey.isDown) {
             if (!world.pumpExists) {
                 	$('#pump').get(0).play(); //gets the first element of the sound
                 pump = pumps.create(digger.x, digger.y, 'pump');
@@ -239,8 +257,8 @@ function update() {
         }
     }
 
-    world.objects.pookahs.checkCollisions(pumps);
-    world.objects.fygars.checkCollisions(pumps);
+    //world.objects.pookahs.checkCollisions(pumps);
+    //world.objects.fygars.checkCollisions(pumps);
 
     if (isGameOver()) {    
         win = winner.create(100, 100, 'winner');
@@ -248,26 +266,36 @@ function update() {
         speed = 9;
         game.paused = true;
     }
+}
 
-    function digSoil() {
-        world.map.putTile(-1, world.layer.getTileX(digger.x), world.layer.getTileY(digger.y));
-    }
+function render() {
+    // Render FPS debug text in top left corner
+    game.debug.text('FPS: '+game.time.fps || '--', 2, 14, "#00ff00");
+}
 
-    function reload() {
-        world.pumpExists = false;
-    }
+function digSoil() {
+    var digger = world.objects.digger.sprite(0);
+    world.map.putTile(-1, world.layer.getTileX(digger.x), world.layer.getTileY(digger.y));
+}
 
-    //this function will pass the sound to your event when it is clicked
-    //(must have jquery library script linked)
-    function PlaySound(soundObj) {
+function reload() {
+    world.pumpExists = false;
+}
+
+//this function will pass the sound to your event when it is clicked
+//(must have jquery library script linked)
+function PlaySound(soundObj) {
     sound = document.getElementById(soundObj);
     sound.Play();
-    }
 }
 
 function isGameOver() {
     return world.objects.pookahs.instances.length === 0 && world.objects.fygars.instances.length === 0;
 }
+
+/////////////////////
+// === CLASSES === //
+/////////////////////
 
 /**
  * Represents a character in the game.
@@ -316,26 +344,28 @@ Character.prototype = {
         newCharacter.anchor.setTo(this.anchorX, this.anchorY);
 
         // Loop through and add each animation
-        Object.keys(this.animations).forEach(function(k) {
-            newCharacter.animations.add(
-                this.animations[k].name,
-                this.animations[k].frames,
-                this.animations[k].frameRate,
-                this.animations[k].loop
-            );
-        });
+        for (var key in this.animations) {
+            if (this.animations.hasOwnProperty(key)) {
+                newCharacter.animations.add(
+                    this.animations[key].name,
+                    this.animations[key].frames,
+                    this.animations[key].frameRate,
+                    this.animations[key].loop
+                    );
+            }
+        }
 
         this.instances.push(newCharacter);
 
         return newCharacter;
     },
 
-    addAnimation: function(name, frames, frameRate, loop) {
-        this.animations[name] = {name: name, frames: frames, frameRate: frameRate, loop: loop};
+    addAnimation: function(name, frames, frameRate=1, loop=false) {
+        this.animations[name] = {'name': name, 'frames': frames, 'frameRate': frameRate, 'loop': loop};
     },
 
     playAnimation: function(name) {
-        this.group.callAll('animations.play', null, name);
+        this.group.callAll('animations.play', 'animations', name);
     },
 
     checkCollisions: function(colliderGroup) {
@@ -347,7 +377,13 @@ Character.prototype = {
     kill: function(sprite, group) {
         sprite.kill();
         this.instances.splice(this.instances.indexOf(sprite), 1);
+    },
+
+    sprite: function(index) {
+        return this.instances[index];
     }
 
     //setMovement: function(direction, )
 };
+
+
